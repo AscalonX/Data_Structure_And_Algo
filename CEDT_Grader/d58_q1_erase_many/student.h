@@ -4,21 +4,31 @@
 
 template <typename T>
 void CP::vector<T>::erase_many(const std::vector<int> &pos) {
-  //write your code here
-  vector<int> temp;
-  // pos.push_back(this->size());
+  size_t slow = 0;
+  size_t fast = 0;
+  size_t pos_index = 0;
 
-  int curr = 0;
-  for(int pos_n : pos){
-    if(pos_n>curr){
-      temp.insert(temp.end(),this->begin()+curr+1,this->begin()+pos_n-1);
-    }
-    else{
-      curr = pos_n + 1;
-    }
+  for(int pos_index = 0;pos_index<pos.size();pos_index++){
+      if(fast != pos[pos_index]){
+        while(fast < mSize && fast != pos[pos_index]){
+          mData[slow] = mData[fast];
+          slow+=1;
+          fast+=1;
+        }
+        fast+=1;
+      }
+      else{
+        fast+=1;
+      } 
   }
-  if(this->begin() +)
-  this = temp;
+
+  while(fast < mSize){
+    mData[slow] = mData[fast];
+    slow+= 1;
+    fast += 1;
+  }
+  
+  mSize = slow;
 }
 
 #endif

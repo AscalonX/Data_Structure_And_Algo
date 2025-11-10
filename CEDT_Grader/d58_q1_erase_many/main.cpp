@@ -7,8 +7,6 @@
 
 using namespace std;
 
-
-
 int main() {
   CP::vector<int> v;
   char c;
