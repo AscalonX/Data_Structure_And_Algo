@@ -1,17 +1,30 @@
 #include <iostream>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
+struct student
+{
+    public :
+        int grade;
+        int grade2;
+        string name;
+};
 
-int main(){
-    vector<int> n = {0,1,2,3,4,5};
 
-    vector<int> b;
-    b.insert(b.begin(),n.begin()+2,n.end());
-
-    for(int x : b){
-        cout<<x<<" ";
+bool cmp(const student &a,const student &b){
+    if(a.grade == b.grade){
+        return a.grade2 > b.grade2;
     }
-    return 0;
+    else{
+        return a.grade > b.grade;
+    }
+
+}
+int main(){
+
+    vector<student> s;
+
+    sort(s.begin(),s.end(),cmp);
 }
