@@ -5,20 +5,23 @@
 //you can include any other file here
 //you are allow to use any data structure
 
-
 template <typename T>
 void CP::vector<T>::uniq() {
 
   std::unordered_set<T> s;
   
-  for(int i =0;i<mSize;i++){
-    int curr = mData[i];
+  int write_idx = 0;
 
-    if(s.find(curr) != s.end()){
-      s.insert(curr);
+
+  for(int i = 0;i < mSize;i++){
+    if(s.find(mData[i]) == s.end()){
+      mData[write_idx] = mData[i];
+      write_idx += 1;
+      s.insert(mData[i]);
     }
   }
-  mSize = new_end - mData;
+
+  mSize = write_idx;
 }
 
 #endif
