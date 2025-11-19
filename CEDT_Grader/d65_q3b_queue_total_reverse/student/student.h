@@ -3,69 +3,50 @@
 #define _STUDENT_H_INCLUDED
 #include "queue.h"
 template <typename T>
+
+
 void CP::queue<T>::reverse() {
-  std::cout<<"Curr ; "<<aux<<"\n";
-  if(aux == -1){
+  if(aux == 0 ){
+    mFront = (mFront+mSize-1+mCap)%mCap;
+    aux = 1;
+  }
+  else{
+    mFront = (mFront+1-mSize +mCap)%mCap;
     aux = 0;
   }
-  else if(aux == 0){
-    aux = -1;
-  }
-  std::cout<<"Curr ; "<<aux<<"\n";
-  // Your code here
 }
 
 template <typename T>
 const T& CP::queue<T>::front() const {
-  // You MAY need to edit this function
-  std::cout<<"AA : "<<aux<<" \n\n";
-  if(aux == -1){
-    std::cout<<"mfront : "<<mFront<<" Msize : "<<mSize<<" mCap : "<<mCap<<" Cal : "<<(mFront+mSize-1)%mCap<<"\n";
-
-    return back();
-  }
-  else{
-    return mData[mFront];
-  }
+  return mData[mFront];
 }
 
 template <typename T>
 const T& CP::queue<T>::back() const {
-  // You MAY need to edit this function
-  if(aux == -1){
-    return mData[(mFront-mSize-1)%mCap];
-    // return mData[mFront];
+  if(aux == 0){
+    return mData[(mFront+mSize-1+mCap)%mCap];
   }
   else{
-    return mData[(mFront + mSize - 1) % mCap];
+    return mData[(mFront+1-mSize+mCap)%mCap];
   }
 }
 
 template <typename T>
 void CP::queue<T>::push(const T& element) {
-  // You MAY need to edit this function
-  if(aux == -1){
-    ensureCapacity(mSize + 1);
-    mData[(mFront - mSize) % mCap] = element;
-    mSize++;
-  }
-  else{
-    ensureCapacity(mSize + 1);
-    mData[(mFront + mSize) % mCap] = element;
-    mSize++;
-  }
+  ensureCapacity(mSize+1);
+  mData[(mFront + (aux?-mSize:mSize) +mCap) % mCap] = element;
+  mSize++;
 }
 
 template <typename T>
 void CP::queue<T>::pop() {
-  // You MAY need to edit this function
-  if(aux == -1){
-    mFront = (mFront-1) % mCap;
+  if(aux == 0){
+    mFront = (mFront+1+mCap)%mCap;
   }
   else{
-    mFront = (mFront + 1) % mCap;
+    mFront = (mFront-1+mCap)%mCap;
   }
-  mSize--;
+  mSize-=1;
 }
 
 #endif
