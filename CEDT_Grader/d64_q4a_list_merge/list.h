@@ -5,7 +5,7 @@
 #include <iostream>
 //#pragma once
 
-namespace CP {
+namespace CP { 
 
 template <typename T>
 class list
@@ -35,13 +35,13 @@ class list
 
         list_iterator(node *a) : ptr(a) { }
 
-        list_iterator& operator++() {
-          ptr = ptr->next;
+        list_iterator& operator++() { 
+          ptr = ptr->next; 
           return (*this);
         }
 
-        list_iterator& operator--() {
-          ptr = ptr->prev;
+        list_iterator& operator--() { 
+          ptr = ptr->prev; 
           return (*this);
         }
 
@@ -59,8 +59,8 @@ class list
 
         T& operator*() { return ptr->data; }
         T* operator->() { return &(ptr->data); }
-        bool operator==(const list_iterator& other) { return other.ptr == ptr; }
-        bool operator!=(const list_iterator& other) { return other.ptr != ptr; }
+        bool operator==(const list_iterator& other) const { return other.ptr == ptr; }
+        bool operator!=(const list_iterator& other) const { return other.ptr != ptr; }
     };
 
   public:
@@ -75,9 +75,9 @@ class list
     //-------------- constructor & copy operator ----------
 
     // copy constructor
-    list(list<T>& a) :
+    list(const list<T>& a) :
       mHeader( new node() ), mSize( 0 ) {
-      for (iterator it = a.begin();it != a.end();it++) {
+      for (auto it = a.begin();it != a.end();it++) {
         push_back(*it);
       }
     }
@@ -117,6 +117,14 @@ class list
     }
 
     iterator end() {
+      return iterator(mHeader);
+    }
+
+    iterator begin() const {
+      return iterator(mHeader->next);
+    }
+
+    iterator end() const {
       return iterator(mHeader);
     }
     //----------------- access -----------------
@@ -163,50 +171,21 @@ class list
     }
 
     void print() {
-      std::cout << " Header address = " << (mHeader) << std::endl;
-      int i = 0;
-      iterator before;
-      for (iterator it = begin();it!=end();before = it, it++,i++) {
-        std::cout << "Node " << i << ": " << *it;
-        std::cout << " (prev = " << it.ptr->prev << ", I'm at " << it.ptr << ", next = " << it.ptr->next << ")" <<  std:: endl;
+      std::cout << "Size = " << mSize << "\n";
+      std::cout << "From FRONT to BACK: ";
+      for (auto it = begin();it!=end();it++) {
+        std::cout << *it << " ";
       }
-    }
-    void splitList(list<T>& list1, list<T>& list2) {
-      int a = (mSize+1)/2;
-      int b=  mSize/2;
-
-      if(a == 0) return;
-
-      node *trav = mHeader;
-
-      for(int i =0;i<a;i++){
-        trav = trav->next;
+      std::cout << std::endl << "From BACK to FRONT: ";
+      auto it = end();
+      while (it != begin()) {
+        --it;
+        std::cout << *it << " ";
       }
-
-      node *trav2 = trav->next;
-
-
-      list1.mHeader->prev->next = mHeader->next;
-      mHeader->next->prev = list1.mHeader->prev;
-      trav->next = list1.mHeader;
-      list1.mHeader->prev = trav;
-
-
-      list2.mHeader->prev->next = trav2;
-      trav2->prev = list2.mHeader->prev;
-      mHeader->prev->next = list2.mHeader;
-      list2.mHeader->prev = mHeader->prev;
-
-
-      mHeader->prev = mHeader;
-      mHeader->next = mHeader;
-
-
-      mSize = 0;
-      list1.mSize += a;
-      list2.mSize += b;
-
+      std::cout << "\n";
     }
+
+    void merge(list<list<T>> &ls);
 
 };
 

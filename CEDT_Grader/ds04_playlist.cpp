@@ -1,9 +1,9 @@
-#ifndef _CP_LIST_INCLUDED_
-#define _CP_LIST_INCLUDED_
-
-#include <stdexcept>
+#include <stdio.h>
+#include <stdlib.h>
 #include <iostream>
-//#pragma once
+#include <string>
+#include <vector>
+#include <algorithm>
 
 namespace CP {
 
@@ -164,47 +164,65 @@ class list
 
     void print() {
       std::cout << " Header address = " << (mHeader) << std::endl;
-      int i = 0;
+      int i;
       iterator before;
       for (iterator it = begin();it!=end();before = it, it++,i++) {
         std::cout << "Node " << i << ": " << *it;
         std::cout << " (prev = " << it.ptr->prev << ", I'm at " << it.ptr << ", next = " << it.ptr->next << ")" <<  std:: endl;
       }
     }
-    void splitList(list<T>& list1, list<T>& list2) {
-      int a = (mSize+1)/2;
-      int b=  mSize/2;
 
-      if(a == 0) return;
+    void check() {
+      node* p;
+      int n;
+      p = mHeader;
+      n = mSize+1;
+      while (n--) p = p->next;
+      if (p != mHeader) {
+        std::cout << "next POINTER ERROR" << std::endl;
+      }
+      p = mHeader;
+      n = mSize+1;
+      while (n--) p = p->prev;
+      if (p != mHeader) {
+        std::cout << "prev POINTER ERROR" << std::endl;
+      }
+    }
 
-      node *trav = mHeader;
+    void reorder(int pos,std::vector<int> selected) {
+      node *trav = mHeader->next;
 
-      for(int i =0;i<a;i++){
+      std::vector<iterator> vec;      
+
+      for(int i =0;i<pos;i++){
         trav = trav->next;
       }
 
-      node *trav2 = trav->next;
+      iterator iter = this->begin();
+
+      int cnt = 0;
+      for(int e: selected){
+        while(cnt < e){
+          iter++;
+          cnt += 1;
+        }
+
+        vec.push_back(iter);
+      }
+
+      for(iterator it:vec){
+        node *ptr = it.ptr;
+        ptr->prev->next = ptr->next;
+        ptr->next->prev = ptr->prev;
 
 
-      list1.mHeader->prev->next = mHeader->next;
-      mHeader->next->prev = list1.mHeader->prev;
-      trav->next = list1.mHeader;
-      list1.mHeader->prev = trav;
+        trav->prev->next = ptr;
+        ptr->prev = trav->prev;
+        
 
-
-      list2.mHeader->prev->next = trav2;
-      trav2->prev = list2.mHeader->prev;
-      mHeader->prev->next = list2.mHeader;
-      list2.mHeader->prev = mHeader->prev;
-
-
-      mHeader->prev = mHeader;
-      mHeader->next = mHeader;
-
-
-      mSize = 0;
-      list1.mSize += a;
-      list2.mSize += b;
+        ptr->next = trav;
+        trav->prev = ptr;
+      }
 
     }
 
@@ -212,6 +230,47 @@ class list
 
 }
 
-#endif
+//----------------------------------------------
+int main() {
+  int n;
+  std::cin >> n;
 
+  CP::list<std::string> l;
+  int pos;
+  std::vector<int> selected;
+
+  while(n--) {
+    std::string st;
+    std::cin >> st;
+    l.push_back(st);
+  }
+
+  std::cin >> n;
+  while(n--) {
+    int a;
+    std::cin >> a;
+    selected.push_back(a);
+  }
+  std::sort(selected.begin(),selected.end());
+
+  //call student function
+  std::cin >> pos;
+  l.reorder(pos,selected);
+
+  //check result
+  l.check();
+  auto it = l.begin();
+  while (it != l.end()) {
+    std::cout << *it << " ";
+    it++;
+  }
+  std::cout << std::endl;
+  it = l.end(); it--;
+  while (it != l.end()) {
+    std::cout << *it << " ";
+    it--;
+  }
+  std::cout << std::endl;
+
+}
 
