@@ -3,58 +3,57 @@
 
 template <typename KeyT,typename MappedT,typename CompareT >
 CP::map_bst<KeyT,MappedT,CompareT> CP::map_bst<KeyT,MappedT,CompareT>::split(KeyT val) {
-  
-  // 1. Create the result tree
-  CP::map_bst<KeyT,MappedT,CompareT> result;
-  
-  // 2. Set up the "Hooks" (Pointers to Pointers)
-  // 'child_L' points to the 'link' where we attach the next SMALL node
-  node** child_L = &mRoot; 
-  
-  // 'child_R' points to the 'link' where we attach the next BIG node
-  node** child_R = &result.mRoot;
 
-  // We also need to track parents to update parent pointers later
-  node* parent_L = NULL;
-  node* parent_R = NULL;
+    CP::map_bst<KeyT,MappedT,CompareT> result;
 
-  // 3. The Iterator (Start at root)
-  node* it = mRoot;
 
-  // 4. The Loop (O(h))
-  while (it != NULL) {
-      
+    node **old_tree = &mRoot;
+    node **new_tree = &result.mRoot;
+
+
+    node *parent_l = NULL;
+    node *parent_r = NULL;
+
+    node *it = mRoot;
+
+
+    while (it != NULL) {
       if (mLess(it->data.first, val)) {
-          // CASE: Node is SMALLER than val.
-          // It stays in the ORIGINAL tree (Left Side).
-          
-          *child_L = it;       // Attach node to the Left Hook
-          it->parent = parent_L; // Update its parent
-          
-          parent_L = it;       // This node becomes the new parent for the next small node
-          child_L = &(it->right); // Next small node will be attached to THIS node's right
-          
-          it = it->right;      // Move Right (to look for bigger numbers that might still be < val)
-          
+          // CASE: Node belongs to LEFT (Original) tree.
+          // 1. Attach 'it' to the current Left Hook.
+          // 2. Fix 'it's parent pointer.
+          // 3. Move the parent_L tracker to 'it'.
+          // 4. Update child_L to point to the address of 'it->right' (the dangerous side).
+          // 5. Move 'it' to the right.
+
+          *old_tree = it;
+          it->parent = parent_l;
+          parent_l = it;
+
+          old_tree = &(it->right);
+          it = it->right;
+
       } else {
-          // CASE: Node is >= val.
-          // It moves to the RESULT tree (Right Side).
-          
-          *child_R = it;       // Attach node to the Right Hook
-          it->parent = parent_R; // Update its parent
-          
-          parent_R = it;       // This node becomes the new parent for the next big node
-          child_R = &(it->left);  // Next big node will be attached to THIS node's left
-          
-          it = it->left;       // Move Left (to look for smaller numbers that might still be >= val)
+          // CASE: Node belongs to RIGHT (Result) tree.
+          // 1. Attach 'it' to the current Right Hook.
+          // 2. Fix 'it's parent pointer.
+          // 3. Move the parent_R tracker to 'it'.
+          // 4. Update child_R to point to the address of 'it->left' (the dangerous side).
+          // 5. Move 'it' to the left.
+
+          *new_tree = it;
+          it->parent = parent_r;
+          parent_r = it;
+
+          new_tree = &(it->left);
+          it = it->left;
+
       }
   }
 
-  // 5. Close the lists (The last hooks point to NULL)
-  *child_L = NULL;
-  *child_R = NULL;
+  new_tree = NULL;
+  old_tree = NULL;
 
-  // Note: The problem says we don't need to fix mSize, so we ignore it.
   return result;
 }
 
